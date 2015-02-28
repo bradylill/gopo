@@ -17,7 +17,7 @@ type Message struct {
 	Token   string
 }
 
-func NewPushoverClient() *EndPoint {
+func NewGopo() *EndPoint {
 	return &EndPoint{defaultEndPoint}
 }
 
