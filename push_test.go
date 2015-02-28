@@ -31,19 +31,23 @@ func TestSendSuccess(t *testing.T) {
 	defer server.Close()
 	endPoint := newTestEndPoint(server, "userKey", "apiToken")
 
-	message := Message{"hello"}
+	resp, err := endPoint.Send(Message{})
+	if err != nil {
+		t.Fail()
+	}
 
-	status := endPoint.Send(message)
-	compare(t, http.StatusOK, status)
+	compare(t, http.StatusOK, resp.StatusCode)
 }
 
-func TestSendInvalidUserKey(t *testing.T) {
-	server := newTestServer(http.StatusUnauthorized)
+func TestSendInvalidSend(t *testing.T) {
+	server := newTestServer(http.StatusBadRequest)
 	defer server.Close()
 	endPoint := newTestEndPoint(server, "userKey", "apiToken")
 
-	message := Message{"hello"}
+	resp, err := endPoint.Send(Message{})
+	if err != nil {
+		t.Fail()
+	}
 
-	status := endPoint.Send(message)
-	compare(t, http.StatusUnauthorized, status)
+	compare(t, http.StatusBadRequest, resp.StatusCode)
 }

@@ -21,7 +21,7 @@ func NewGopo(userKey, apiToken string) *EndPoint {
 	return &EndPoint{defaultEndPoint, userKey, apiToken}
 }
 
-func (e EndPoint) Send(message Message) int {
+func (e EndPoint) Send(message Message) (*http.Response, error) {
 	vals := url.Values{
 		"message": {message.Message},
 		"user":    {e.UserKey},
@@ -29,9 +29,9 @@ func (e EndPoint) Send(message Message) int {
 
 	resp, err := http.PostForm(e.URL, vals)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
-	return resp.StatusCode
+	return resp, nil
 }
