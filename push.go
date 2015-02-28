@@ -19,8 +19,9 @@ type Message struct {
 }
 
 type Response struct {
-	Status  int    `json:"status"`
-	Request string `json:"request"`
+	Status  int      `json:"status"`
+	Request string   `json:"request"`
+	Errors  []string `json:"errors"`
 }
 
 func createResponse(resp *http.Response) *Response {

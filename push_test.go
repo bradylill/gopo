@@ -30,7 +30,7 @@ func newTestEndPoint(server *httptest.Server, userKey, apiToken string) *EndPoin
 }
 
 func TestSendSuccess(t *testing.T) {
-	testResponse := &Response{1, "reqId123"}
+	testResponse := &Response{1, "reqId123", []string{}}
 	server := newTestServer(http.StatusOK, testResponse)
 	defer server.Close()
 	endPoint := newTestEndPoint(server, "userKey", "apiToken")
@@ -42,10 +42,11 @@ func TestSendSuccess(t *testing.T) {
 
 	compare(t, 1, resp.Status)
 	compare(t, "reqId123", resp.Request)
+	compare(t, 1, len(resp.Errors))
 }
 
 func TestSendInvalidSend(t *testing.T) {
-	testResponse := &Response{0, "reqId123"}
+	testResponse := &Response{0, "reqId123", []string{"error message"}}
 	server := newTestServer(http.StatusBadRequest, testResponse)
 	defer server.Close()
 	endPoint := newTestEndPoint(server, "userKey", "apiToken")
@@ -57,4 +58,5 @@ func TestSendInvalidSend(t *testing.T) {
 
 	compare(t, 0, resp.Status)
 	compare(t, "reqId123", resp.Request)
+	compare(t, 0, len(resp.Errors))
 }
