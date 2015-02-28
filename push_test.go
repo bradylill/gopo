@@ -22,16 +22,16 @@ func newTestServer(status int) *httptest.Server {
 	return httptest.NewServer(handler)
 }
 
-func newTestEndPoint(server *httptest.Server) *EndPoint {
-	return &EndPoint{server.URL}
+func newTestEndPoint(server *httptest.Server, userKey, apiToken string) *EndPoint {
+	return &EndPoint{server.URL, userKey, apiToken}
 }
 
 func TestSendSuccess(t *testing.T) {
 	server := newTestServer(http.StatusOK)
 	defer server.Close()
-	endPoint := newTestEndPoint(server)
+	endPoint := newTestEndPoint(server, "userKey", "apiToken")
 
-	message := Message{"hello", "userKey", "appToken"}
+	message := Message{"hello"}
 
 	status := endPoint.Send(message)
 	compare(t, http.StatusOK, status)
@@ -40,9 +40,9 @@ func TestSendSuccess(t *testing.T) {
 func TestSendInvalidUserKey(t *testing.T) {
 	server := newTestServer(http.StatusUnauthorized)
 	defer server.Close()
-	endPoint := newTestEndPoint(server)
+	endPoint := newTestEndPoint(server, "userKey", "apiToken")
 
-	message := Message{"hello", "userKey", "appToken"}
+	message := Message{"hello"}
 
 	status := endPoint.Send(message)
 	compare(t, http.StatusUnauthorized, status)
