@@ -49,7 +49,7 @@ func TestSendSuccess(t *testing.T) {
 	compare(t, "Response", testResponse, resp)
 }
 
-func TestSendInvalidSend(t *testing.T) {
+func TestSendInvalid(t *testing.T) {
 	testResponse := &Response{0, "reqId123", []string{"error message"}, Usage{2, 1, "1234"}}
 	server := newTestServer(http.StatusBadRequest, testResponse)
 	defer server.Close()
