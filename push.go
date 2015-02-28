@@ -1,6 +1,7 @@
 package gopo
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/url"
 )
@@ -17,11 +18,23 @@ type Message struct {
 	Message string
 }
 
+type Response struct {
+	Status  int    `json:"status"`
+	Request string `json:"request"`
+}
+
+func createResponse(resp *http.Response) *Response {
+	gopoResponse := &Response{}
+	json.NewDecoder(resp.Body).Decode(gopoResponse)
+
+	return gopoResponse
+}
+
 func NewGopo(userKey, apiToken string) *EndPoint {
 	return &EndPoint{defaultEndPoint, userKey, apiToken}
 }
 
-func (e EndPoint) Send(message Message) (*http.Response, error) {
+func (e EndPoint) Send(message Message) (*Response, error) {
 	vals := url.Values{
 		"message": {message.Message},
 		"user":    {e.UserKey},
@@ -33,5 +46,5 @@ func (e EndPoint) Send(message Message) (*http.Response, error) {
 	}
 	defer resp.Body.Close()
 
-	return resp, nil
+	return createResponse(resp), nil
 }

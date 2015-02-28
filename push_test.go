@@ -1,6 +1,7 @@
 package gopo
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -12,11 +13,13 @@ func compare(t *testing.T, expected, actual interface{}) {
 	}
 }
 
-func newTestServer(status int) *httptest.Server {
+func newTestServer(statusCode int, response *Response) *httptest.Server {
 	handler := http.HandlerFunc(
 		func(writer http.ResponseWriter, req *http.Request) {
 			writer.Header().Set("Content-Type", "application/json")
-			writer.WriteHeader(status)
+			writer.WriteHeader(statusCode)
+			b, _ := json.Marshal(response)
+			writer.Write(b)
 		})
 
 	return httptest.NewServer(handler)
@@ -27,7 +30,8 @@ func newTestEndPoint(server *httptest.Server, userKey, apiToken string) *EndPoin
 }
 
 func TestSendSuccess(t *testing.T) {
-	server := newTestServer(http.StatusOK)
+	testResponse := &Response{1, "reqId123"}
+	server := newTestServer(http.StatusOK, testResponse)
 	defer server.Close()
 	endPoint := newTestEndPoint(server, "userKey", "apiToken")
 
@@ -36,11 +40,13 @@ func TestSendSuccess(t *testing.T) {
 		t.Fail()
 	}
 
-	compare(t, http.StatusOK, resp.StatusCode)
+	compare(t, 1, resp.Status)
+	compare(t, "reqId123", resp.Request)
 }
 
 func TestSendInvalidSend(t *testing.T) {
-	server := newTestServer(http.StatusBadRequest)
+	testResponse := &Response{0, "reqId123"}
+	server := newTestServer(http.StatusBadRequest, testResponse)
 	defer server.Close()
 	endPoint := newTestEndPoint(server, "userKey", "apiToken")
 
@@ -49,5 +55,6 @@ func TestSendInvalidSend(t *testing.T) {
 		t.Fail()
 	}
 
-	compare(t, http.StatusBadRequest, resp.StatusCode)
+	compare(t, 0, resp.Status)
+	compare(t, "reqId123", resp.Request)
 }
