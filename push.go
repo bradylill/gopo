@@ -15,8 +15,11 @@ type EndPoint struct {
 }
 
 type Message struct {
-	Message string
-	ToKey   string
+	ToKey    string
+	Message  string
+	Title    string
+	URL      string
+	URLTitle string
 }
 
 type Usage struct {
@@ -58,9 +61,13 @@ func NewGopo(apiToken string) *EndPoint {
 
 func (e EndPoint) Push(message Message) (*Response, error) {
 	vals := url.Values{
-		"message": {message.Message},
-		"user":    {message.ToKey},
-		"token":   {e.AppToken}}
+		"message":   {message.Message},
+		"user":      {message.ToKey},
+		"token":     {e.AppToken},
+		"title":     {message.Title},
+		"url":       {message.URL},
+		"url_title": {message.URLTitle},
+	}
 
 	resp, err := http.PostForm(e.URL, vals)
 	if err != nil {
