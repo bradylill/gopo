@@ -11,12 +11,12 @@ const defaultEndPoint = "https://api.pushover.net/1/messages.json"
 
 type EndPoint struct {
 	URL      string
-	UserKey  string
 	AppToken string
 }
 
 type Message struct {
 	Message string
+	ToKey   string
 }
 
 type Usage struct {
@@ -52,14 +52,14 @@ func createResponse(resp *http.Response) *Response {
 	return gopoResponse
 }
 
-func NewGopo(userKey, apiToken string) *EndPoint {
-	return &EndPoint{defaultEndPoint, userKey, apiToken}
+func NewGopo(apiToken string) *EndPoint {
+	return &EndPoint{defaultEndPoint, apiToken}
 }
 
 func (e EndPoint) Push(message Message) (*Response, error) {
 	vals := url.Values{
 		"message": {message.Message},
-		"user":    {e.UserKey},
+		"user":    {message.ToKey},
 		"token":   {e.AppToken}}
 
 	resp, err := http.PostForm(e.URL, vals)
