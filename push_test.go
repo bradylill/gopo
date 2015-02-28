@@ -35,13 +35,13 @@ func newTestEndPoint(server *httptest.Server, userKey, apiToken string) *EndPoin
 	return &EndPoint{server.URL, userKey, apiToken}
 }
 
-func TestSendSuccess(t *testing.T) {
+func TestPushSuccess(t *testing.T) {
 	testResponse := &Response{1, "reqId123", []string{}, Usage{4, 2, "123"}}
 	server := newTestServer(http.StatusOK, testResponse)
 	defer server.Close()
 	endPoint := newTestEndPoint(server, "userKey", "apiToken")
 
-	resp, err := endPoint.Send(Message{})
+	resp, err := endPoint.Push(Message{})
 	if err != nil {
 		t.Fail()
 	}
@@ -49,13 +49,13 @@ func TestSendSuccess(t *testing.T) {
 	compare(t, "Response", testResponse, resp)
 }
 
-func TestSendInvalid(t *testing.T) {
+func TestPushFail(t *testing.T) {
 	testResponse := &Response{0, "reqId123", []string{"error message"}, Usage{2, 1, "1234"}}
 	server := newTestServer(http.StatusBadRequest, testResponse)
 	defer server.Close()
 	endPoint := newTestEndPoint(server, "userKey", "apiToken")
 
-	resp, err := endPoint.Send(Message{})
+	resp, err := endPoint.Push(Message{})
 	if err != nil {
 		t.Fail()
 	}
