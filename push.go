@@ -20,6 +20,7 @@ type Message struct {
 	Title    string
 	URL      string
 	URLTitle string
+	Sound    string
 }
 
 type Usage struct {
@@ -67,6 +68,7 @@ func (e EndPoint) Push(message Message) (*Response, error) {
 		"title":     {message.Title},
 		"url":       {message.URL},
 		"url_title": {message.URLTitle},
+		"sound":     {message.Sound},
 	}
 
 	resp, err := http.PostForm(e.URL, vals)
