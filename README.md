@@ -11,5 +11,4 @@ go get github.com/bradylill/gopo
 ```go
 import "github.com/bradylill/gopo"
 ```
-
 todo
